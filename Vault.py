@@ -47,7 +47,7 @@ PERSONAL_INFO_FILE_NAME='itenerary.json'
 
 COMMIT_MESSAGE = "Made some changes"
 BRANCH = 'main'
-FILES_TO_TRACK = 'production'
+FILES_TO_TRACK = FOLDER_NAME
 
 
 # Setting font color to green
@@ -139,12 +139,12 @@ def gitInfo():
     gitRepoLink = getpass('enter the link to the repository that will store your files: '.upper())
     githubnInfoDict = {"gitUsername":gitUsername,"gitEmail":gitEmail,"gitRepoLink":gitRepoLink}
     return githubnInfoDict 
-
-personalinfodict = unlock(PERSONAL_INFO_FILE)
-EMAIL = personalinfodict.get('gitEmail')
-USERNAME = personalinfodict.get('gitUsername')
-REPO_LINK = personalinfodict.get('gitRepoLink')
-def git_push(commit_message=COMMIT_MESSAGE, branch=BRANCH, email = EMAIL, username=USERNAME, repo_link = REPO_LINK, files_to_track=FILES_TO_TRACK,folder_name = FOLDER_NAME):
+    
+def git_push(commit_message=COMMIT_MESSAGE, branch=BRANCH,folder_name = FOLDER_NAME):
+    personalinfodict = unlock(PERSONAL_INFO_FILE)
+    email = personalinfodict.get('gitEmail')
+    username = personalinfodict.get('gitUsername')
+    repo_link = personalinfodict.get('gitRepoLink')
     """
     Automatically stages, commits, and pushes files to GitHub.
 
@@ -333,7 +333,6 @@ class essentials():
     @classmethod
     def act(cls):
         passwd_dict=cls.passwd_dict
-        secretdict=cls.secretdict
         print(f'olaa, {cls.username} welcome to your vault'.upper())
         choice = ''
         while True:
@@ -404,19 +403,18 @@ class essentials():
                     if choice == 'share':
                         secret = input('enter your secret: '.upper())
                         now = f"{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"
-                        secretdict.update({now:secret})
+                        cls.secretdict.update({now:secret})
                     elif choice == 'reveal':
-                        secretdict = unlock(SECRETS_FILE)   
-                        print(secretdict)     
+                        print(cls.secretdict)     
                         
                     elif choice not in choices:
                         print('invalid input'.upper())    
                 print('Your secerts have been secured!!'.upper())
+                lock(cls.secretdict,SECRETS_FILE)
                 sleep(2.2)
                 os.system('cls')
                   
             elif choice == 'exit'.upper():
-                lock(secretdict,SECRETS_FILE)
                 lock(passwd_dict,PASSWD_FILE)
                 print('Your vault has been locked'.upper())
                 sleep(2.2)
