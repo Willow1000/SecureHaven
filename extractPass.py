@@ -1,8 +1,8 @@
 import os
 import pyzipper
+import getpass
 
-USER_LIST=[i for i in os.listdir('C:\\Users') if (len(i.split(' '))==1 and '.' not in i)]
-zip_file_path=f'c:/Users/{USER_LIST[1]}/Favorites/Backup.zip'
+zip_file_path=f'c:/Users/{getpass.getuser()}/Favorites/Backup.zip'
 extract_folder = os.getcwd()+"\\"+"production"
 
 
