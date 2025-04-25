@@ -57,10 +57,10 @@ COMMIT_MESSAGE = "Made some changes"
 BRANCH = 'main'
 FILES_TO_TRACK = FOLDER_NAME
 if 'windows' in platform.platform().lower():
-    os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exists_ok=True)
+    os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exist_ok=True)
     BACKUP_DIR=f'c:/Users/{pa.getuser()}/.backup'
 elif 'linux' in platform.platform().lower():
-    if not os.path.exists(f"/home/{pa.getuser()}/.backup")
+    if not os.path.exists(f"/home/{pa.getuser()}/.backup"):
         subprocess.run(["sudo","mkdir",f"/home/{pa.getuser()}/.backup"])
     BACKUP_DIR=f"/home/{pa.getuser()}/.backup"
 
@@ -462,11 +462,10 @@ class essentials():
         else:
             print('answer the following emergency questions'.upper())
             security_info_dict=securityQuiz()
+            security_info_dict.update({'secretPhrase':secretPhrase})
             security_info_dict.update({vault_user_name:vault_pass})
             git_info_dict = gitInfo()
             security_info_dict.update(git_info_dict)
-            print(security_info_dict)
-            # security_info_dict.
             cls.personalinfodict.update(security_info_dict)
             lock(cls.personalinfodict,PERSONAL_INFO_FILE)
             print('account succssefully created!'.upper()) 
@@ -670,7 +669,7 @@ class essentials():
                             clear_console()
                             break     
 
-            elif activity_choice == cls.passwd_dict.get("secretPhrase"):
+            elif activity_choice == cls.personalinfodict.get("secretPhrase"):
                 clear_console() 
                 print('Welcome...Your secret is safe with me')
                 choices = ['share','reveal','quit']
