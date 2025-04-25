@@ -197,6 +197,7 @@ def backup():
         if os.path.exists(PROJ_FILE):    
             shutil.copy(PROJ_FILE, FOLDER_PATH)
         zip_file_func(zip_file_path=ZIP_FILE_PATH,folder_path=FOLDER_PATH,target_dir=BACKUP_DIR)
+        subprocess.run(f"attrib +h +s +r {BACKUP_DIR}",shell=True,check=True)
 
 
 # Github Backup function 
