@@ -37,7 +37,7 @@ PROJ_FILE= os.getcwd()+'\\'+'memento.json'
 BASE_DIR = 'C:\\Users'
 
 
-BACKUP_DIR=f'c:/Users/{pa.getuser()}/Favorites'
+
 FOLDER_PATH = os.getcwd()+"\\"+'Backup'
 REPO_PATH = os.getcwd()+"\\"+"../"
 ZIP_FILE_PATH = "Backup.zip"
@@ -56,11 +56,18 @@ PERSONAL_INFO_FILE_NAME='itenerary.json'
 COMMIT_MESSAGE = "Made some changes"
 BRANCH = 'main'
 FILES_TO_TRACK = FOLDER_NAME
-
+if 'windows' in platform.platform().lower():
+    os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exists_ok=True)
+    BACKUP_DIR=f'c:/Users/{pa.getuser()}/.backup'
+elif 'linux' in platform.platform().lower():
+    if not os.path.exists(f"/home/{pa.getuser()}/.backup")
+        subprocess.run(["sudo","mkdir",f"/home/{pa.getuser()}/.backup"])
+    BACKUP_DIR=f"/home/{pa.getuser()}/.backup"
 
 # Setting font color to green
 if 'windows' in platform.platform().lower():
     os.system('color 2')
+    
 
 
 # FILE OPERATION FUNCTIONS
