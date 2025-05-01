@@ -56,6 +56,8 @@ PERSONAL_INFO_FILE_NAME='itenerary.json'
 COMMIT_MESSAGE = "Made some changes"
 BRANCH = 'main'
 FILES_TO_TRACK = FOLDER_NAME
+
+# OS BASED VARIABLES
 if 'windows' in platform.platform().lower():
     os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exist_ok=True)
     BACKUP_DIR=f'c:/Users/{pa.getuser()}/.backup'
@@ -435,6 +437,7 @@ class essentials():
                         return False
             else:
                 cls.username  = username
+                clear_console()
                 return True
     @classmethod            
     def new(cls):
@@ -484,80 +487,87 @@ class essentials():
                 
                 activity_choice=input("email | account | web3 | file | clear | exit'? ".upper()).lower()
             if activity_choice == 'email':
-                
-                action_choice = input('Would you like to create | retrieve | list emails? '.upper()).lower()
-                
-                while action_choice not in action_choices:
-                    print('invalid input'.upper())
-                    action_choice = input('Would you like to create | retrieve | list emails? '.upper()).lower()
-                if action_choice =='retrieve':
-                    mail_address = input('Enter the e-mail address: '.upper())
-                    value=cls.passwd_dict.get(mail_address,'invalid account or username')
-                    if value == 'invalid account or username':
-                        print(value.upper())
-                    else:
-                        pyperclip.copy(value)    
-                        print(f'Your "{mail_address}" password has been copied to clipboard')    
+                while True:
 
-                elif action_choice == "create":
-                    email_address = input('Enter the e-mail address: '.upper()).strip()
-                    password_choice=input("enter 'a' if you already have a password in mind or 'g' for us to generate one for you: ".upper()).lower()
-                    while password_choice not in ['a','g']:
+                    action_choice = input('Would you like to create | retrieve | list emails | exit? '.upper()).lower()
+                    
+                    while action_choice not in action_choices:
                         print('invalid input'.upper())
-                        password_choice=input("enter 'a' if you already have a password in mind or 'g' for us to generate one for you: ".upper()).lower()
-                    if password_choice=='g':
-                        password = password_generator()
-                    elif password_choice == 'a':
-                        password = create_own_pass()    
-                    cls.passwd_dict.update({email_address:password})  
-                    pyperclip.copy(password)       
-                    print('your password has been copied to clipboard'.upper())   
-                    lock(cls.passwd_dict,PASSWD_FILE)
-                elif action_choice == "list":
-                    email_list=[i for i in cls.passwd_dict.keys() if " " not in i]
-                    if email_list:
-                        print(*email_list,sep="\n")
-                    else:
-                        print("No emails available")    
+                        action_choice = input('Would you like to create | retrieve | list emails? '.upper()).lower()
+                    if action_choice =='retrieve':
+                        mail_address = input('Enter the e-mail address: '.upper())
+                        value=cls.passwd_dict.get(mail_address,'invalid account or username')
+                        if value == 'invalid account or username':
+                            print(value.upper())
+                        else:
+                            pyperclip.copy(value)    
+                            print(f'Your "{mail_address}" password has been copied to clipboard')    
 
+                    elif action_choice == "create":
+                        email_address = input('Enter the e-mail address: '.upper()).strip()
+                        password_choice=input("enter 'a' if you already have a password in mind or 'g' for us to generate one for you: ".upper()).lower()
+                        while password_choice not in ['a','g']:
+                            print('invalid input'.upper())
+                            password_choice=input("enter 'a' if you already have a password in mind or 'g' for us to generate one for you: ".upper()).lower()
+                        if password_choice=='g':
+                            password = password_generator()
+                        elif password_choice == 'a':
+                            password = create_own_pass()    
+                        cls.passwd_dict.update({email_address:password})  
+                        pyperclip.copy(password)       
+                        print('your password has been copied to clipboard'.upper())   
+                        lock(cls.passwd_dict,PASSWD_FILE)
+                    elif action_choice == "list":
+                        email_list=[i for i in cls.passwd_dict.keys() if " " not in i]
+                        if email_list:
+                            print(*email_list,sep="\n")
+                        else:
+                            print("No emails available")    
+                    elif action_choice == "exit":
+                        clear_console()
+                        break
             elif activity_choice == "account":
-                action_choice = input('Would you like to create | retrieve | list accounts? '.upper()).lower()
-                while action_choice not in action_choices:
-                    print('invalid input'.upper())
-                    action_choice = input('Would you like to create | retrieve | list accounts? '.upper()).lower()
-                if action_choice == "retrieve":
-                    acc=input('Enter the a/c: '.upper())
-                    username=input('enter your username: '.upper())
-                    bio=acc+' '+username
-                    value=cls.passwd_dict.get(bio,'invalid account or username')
-                    if value == 'invalid account or username':
-                        print(value.upper())
-                    else:
-                        pyperclip.copy(value)    
-                        print(f'Your "{acc}" password for "{username}" has been copied to clipboard')
-                elif action_choice == "create":
-                    acc=input('Enter the a/c: '.upper()).strip()
-                    username=input('enter your username: '.upper()).strip()
-                    bio=acc+' '+username
-
-                    password_choice=input("enter 'a' if you already have a password in mind or 'g' for us to generate one for you: ".upper()).lower()
-                    while password_choice not in ['a','g']:
+                while True:
+                    action_choice = input('Would you like to create | retrieve | list accounts | exit? '.upper()).lower()
+                    while action_choice not in action_choices:
                         print('invalid input'.upper())
+                        action_choice = input('Would you like to create | retrieve | list accounts? '.upper()).lower()
+                    if action_choice == "retrieve":
+                        acc=input('Enter the a/c: '.upper())
+                        username=input('enter your username: '.upper())
+                        bio=acc+' '+username
+                        value=cls.passwd_dict.get(bio,'invalid account or username')
+                        if value == 'invalid account or username':
+                            print(value.upper())
+                        else:
+                            pyperclip.copy(value)    
+                            print(f'Your "{acc}" password for "{username}" has been copied to clipboard')
+                    elif action_choice == "create":
+                        acc=input('Enter the a/c: '.upper()).strip()
+                        username=input('enter your username: '.upper()).strip()
+                        bio=acc+' '+username
+
                         password_choice=input("enter 'a' if you already have a password in mind or 'g' for us to generate one for you: ".upper()).lower()
-                    if password_choice=='g':
-                        password = password_generator()
-                    elif password_choice == 'a':
-                        password = create_own_pass()    
-                    cls.passwd_dict.update({bio:password})  
-                    pyperclip.copy(password)       
-                    print('your password has been copied to clipboard'.upper())   
-                    lock(cls.passwd_dict,PASSWD_FILE)
-                elif action_choice == "list":
-                    accounts_list=[i for i in cls.passwd_dict.keys() if " " in i]
-                    if accounts_list:
-                        print(*accounts_list,sep="\n")
-                    else:
-                        print("No accounts available")    
+                        while password_choice not in ['a','g']:
+                            print('invalid input'.upper())
+                            password_choice=input("enter 'a' if you already have a password in mind or 'g' for us to generate one for you: ".upper()).lower()
+                        if password_choice=='g':
+                            password = password_generator()
+                        elif password_choice == 'a':
+                            password = create_own_pass()    
+                        cls.passwd_dict.update({bio:password})  
+                        pyperclip.copy(password)       
+                        print('your password has been copied to clipboard'.upper())   
+                        lock(cls.passwd_dict,PASSWD_FILE)
+                    elif action_choice == "list":
+                        accounts_list=[i for i in cls.passwd_dict.keys() if " " in i]
+                        if accounts_list:
+                            print(*accounts_list,sep="\n")
+                        else:
+                            print("No accounts available")   
+                    elif action_choice == "exit":
+                        clear_console()
+                        break         
             elif activity_choice == "web3":
                 file_action_choices = ['wallet',"project"]
                 file_action_choice = input("wallet | project: ".upper()).strip().lower()
@@ -611,7 +621,7 @@ class essentials():
 
                             cls.walletinfodict.update({bio:{"password":password,"seedphrase":seedphrase_dict}})  
                             pyperclip.copy(password)       
-                            print(f'your details for"{app_name}" "{wallet_name}" for email "{wallet_email}" havebeen copied to clipboard'.upper()) 
+                            print(f'your password for"{app_name}" "{wallet_name}" for email "{wallet_email}" havebeen copied to clipboard'.upper()) 
                             lock(cls.walletinfodict,WALL_FILE)  
                         elif action_choice == "list":
                             accounts_list={i.split(' ')[0] for i in cls.walletinfodict.keys()}
@@ -731,22 +741,33 @@ class essentials():
                             print("the vault is empty!".upper())
                     elif file_action_choice == "secure":
                         consent_choices = ["y",'n']
+                        try:
+
                         # if 
-                        path_file = input("enter the path to the file you would like to secure: ".upper()).strip()
-                        r""
-                        consent_choice = input("proceeding with this actions means that the file will only exist in the vault and can only be accessed using the retrieval password, would you like to proceed? y(yes) | n(no): ".capitalize()).strip().lower()
-                        while consent_choice not in consent_choices:
-                            print("invalid input")
-                            consent_choice = input("y(yes) | n(no): ".upper()).strip().lower()
-                        if consent_choice == "y":
-                            try:
-                                zip_file_func(folder_path= path_file,zip_file_path=zip_file_path)
-                                print(f"{os.path.basename(path_file)} has been secured".upper())
-                            except FileNotFoundError as e:
-                                print(f"an error occured: {e}")    
-                        else:
-                            print("You cancelled the securing file process")
-                            clear_console()
+                            path_file = input("enter the path to the file you would like to secure: ".upper()).strip()
+                            if not os.path.exists(path_file):
+                                raise FileNotFoundError(f"The file {path_file} does not exist.")
+                            if not os.path.isdir(path_file):
+                                print("File path is not a directory".upper())
+                                continue
+                            else:
+
+                                consent_choice = input("proceeding with this actions means that the file will only exist in the vault and can only be accessed using the retrieval password, would you like to proceed? y(yes) | n(no): ".capitalize()).strip().lower()
+                                while consent_choice not in consent_choices:
+                                    print("invalid input")
+                                    consent_choice = input("y(yes) | n(no): ".upper()).strip().lower()
+                                if consent_choice == "y":
+                                    try:
+                                        zip_file_func(folder_path= path_file,zip_file_path=zip_file_path)
+                                        print(f"{os.path.basename(path_file)} has been secured".upper())
+                                    except FileNotFoundError as e:
+                                        print(f"an error occured: {e}")    
+                                else:
+                                    print("You cancelled the securing file process")
+                                    clear_console()
+                                    continue
+                        except Exception as e:
+                            print(f"an error occured: {e}")    
                             continue
 
                     elif file_action_choice == "list":
@@ -767,16 +788,18 @@ class essentials():
                         clear_console()
 
                     elif file_action_choice == "empty":
-                           
-                        empty_choice = input("kindly confirm your action y(yes) | n(no): ").strip().lower()
-                        while empty_choice not in ['y','n']:
-                            print("invalid choice")
+                        if os.path.exists(zip_file_path):
                             empty_choice = input("kindly confirm your action y(yes) | n(no): ").strip().lower()
-                        if empty_choice == 'y':
-                            os.remove(zip_file_path)
-                            print("the vault has been cleared!".upper())
+                            while empty_choice not in ['y','n']:
+                                print("invalid choice")
+                                empty_choice = input("kindly confirm your action y(yes) | n(no): ").strip().lower()
+                            if empty_choice == 'y':
+                                os.remove(zip_file_path)
+                                print("the vault has been cleared!".upper())
+                            else:
+                                print("action cancelled!".upper())   
                         else:
-                            print("action cancelled!".upper())    
+                            print("Nothing to be emptied")         
 
 
             elif activity_choice == 'clear':
@@ -804,7 +827,8 @@ def vault():
         if conf_changes():
             backup()
         else:
-            pass    
+            pass   
+ 
 # Running
 if __name__ == '__main__':
     vault()
@@ -826,7 +850,3 @@ if __name__ == '__main__':
     except requests.ConnectionError:
         print('No internet Connection'.upper())
         sleep(2.5)
-
-
-   
-        
