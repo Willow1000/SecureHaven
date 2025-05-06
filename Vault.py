@@ -14,6 +14,7 @@ import pyperclip
 from getpass import getpass
 from datetime import datetime
 import platform
+from pathlib import Path
 
 
 
@@ -27,19 +28,19 @@ else:
 # CONSTANTS
 
 # File name constants
-PASSWD_FILE = os.getcwd()+"\\"+'passengers.json'
-SECRETS_FILE=os.getcwd()+"\\"+'essentials.json'
-CARS_FILE = os.getcwd()+"\\"+'cars.txt'
-PERSONAL_INFO_FILE = os.getcwd()+'\\'+'itenerary.json'
-WALL_FILE = os.getcwd()+'\\'+'locus.json'
-PROJ_FILE= os.getcwd()+'\\'+'memento.json'
+PASSWD_FILE = Path(os.getcwd()+"/"+'passengers.json')
+SECRETS_FILE=Path(os.getcwd()+"/"+'essentials.json')
+CARS_FILE =Path( os.getcwd()+"/"+'cars.txt')
+PERSONAL_INFO_FILE =Path( os.getcwd()+'/'+'itenerary.json')
+WALL_FILE =Path( os.getcwd()+'/'+'locus.json')
+PROJ_FILE=Path( os.getcwd()+'/'+'memento.json')
 # Backup constants
-BASE_DIR = 'C:\\Users'
+# BASE_DIR = 'C:\\Users'
 
 
 
-FOLDER_PATH = os.getcwd()+"\\"+'Backup'
-REPO_PATH = os.getcwd()+"\\"+"../"
+FOLDER_PATH = Path(os.getcwd()+"/"+'Backup')
+REPO_PATH = Path(os.getcwd()+"/"+"..")
 ZIP_FILE_PATH = "Backup.zip"
 FILE_VAULT_PATH = 'Vault.zip'
 FILE_EXTRACT_FOLDER_PATH = "Here"
@@ -157,12 +158,21 @@ def zip_file_func(zip_file_path,folder_path,target_dir=''):
                             zip_file.write(file_path, os.path.relpath(file_path, folder_path)) 
             else:
                 zip_file.write(folder_path)
-        if "Backup" in zip_file_path and not os.path.exists(target_dir+"\\"+zip_file_path):
-            shutil.move(zip_file_path,target_dir) 
-
-        elif "Backup" in zip_file_path:
-            os.remove(target_dir+"\\"+zip_file_path) 
-            shutil.move(zip_file_path,target_dir)
+        if "Backup" in zip_file_path and not os.path.exists(target_dir+"/"+zip_file_path):
+            if "windows" in platform.platform().lower():
+                shutil.move(zip_file_path,target_dir) 
+            elif "linux" in platform.platform().lower():
+                subprocess.run(f"sudo mv {zip_file_path} {target_dir}",shell=True)
+                
+        elif "Backup" in zip_file_path and os.path.exists(target_dir+"/"+zip_file_path):
+            
+            if "windows" in platform.platform().lower():
+                os.remove(target_dir+"/"+zip_file_path) 
+                shutil.move(zip_file_path,target_dir) 
+            elif "linux" in platform.platform().lower():
+                subprocess.run(f"sudo rm -rf {target_dir}/{zip_file_path}",shell=True)
+                subprocess.run(f"sudo mv {zip_file_path} {target_dir}",shell=True)
+                
                 
         shutil.rmtree(folder_path)  
     
@@ -184,6 +194,11 @@ def backup():
             shutil.copy(WALL_FILE, os.path.join(FOLDER_PATH, WALL_FILE_NAME))
         if os.path.exists(PROJ_FILE):    
             shutil.copy(PROJ_FILE, os.path.join(FOLDER_PATH, PROJ_FILE_NAME))
+        if os.path.exists(FILE_VAULT_PATH):    
+            shutil.copy(FILE_VAULT_PATH, os.path.join(FOLDER_PATH, FILE_VAULT_PATH))    
+
+        if "window" in platform.platform().lower():
+            subprocess.run(f"attrib +h +s +r {BACKUP_DIR}",shell=True,check=True)    
     else:
         os.makedirs(FOLDER_PATH, exist_ok=True)
         if os.path.exists(PERSONAL_INFO_FILE):
@@ -199,7 +214,8 @@ def backup():
         if os.path.exists(PROJ_FILE):    
             shutil.copy(PROJ_FILE, FOLDER_PATH)
         zip_file_func(zip_file_path=ZIP_FILE_PATH,folder_path=FOLDER_PATH,target_dir=BACKUP_DIR)
-        subprocess.run(f"attrib +h +s +r {BACKUP_DIR}",shell=True,check=True)
+        if "window" in platform.platform().lower():
+            subprocess.run(f"attrib +h +s +r {BACKUP_DIR}",shell=True,check=True)
 
 
 # Github Backup function 
@@ -361,7 +377,7 @@ def clear_console():
 def conf_changes():
     if os.path.exists('.git'):
         results = subprocess.run(['git',"status","--porcelain"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True,text=True)
-        tracked_changes = [line for line in results.stdout.splitlines() if (line.strip() and not line.startswith("??") or line.startswith("?? production"))]
+        tracked_changes = [line for line in results.stdout.splitlines() if (line.strip().startswith("?? production") ) or (line.strip().startswith("M production"))]
         if tracked_changes:
             return True
         else:
@@ -689,7 +705,7 @@ class essentials():
                     choice=input('would you like to share || reveal a secret(s) || quit: '.upper()).lower()
                     if choice == 'share':
                         secret = input('enter your secret: '.upper())
-                        now = f"{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"
+                        now = f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
                         cls.secretdict.update({now:secret})
                         lock(cls.secretdict,SECRETS_FILE)
                     elif choice == 'reveal':
@@ -719,7 +735,7 @@ class essentials():
                    
                     if file_action_choice == "retrieve":
                         if os.path.exists(zip_file_path):
-                            extract_folder = REPO_PATH+"\\"+FILE_EXTRACT_FOLDER_PATH
+                            extract_folder = str(REPO_PATH)+"/"+FILE_EXTRACT_FOLDER_PATH
                             path_file = input("enter the name of thefile you would like to retrieve: ".upper()).strip()
                             back_to_zip = input("would you like to delete the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
                             while back_to_zip not in ['y','n']:
