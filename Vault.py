@@ -35,9 +35,6 @@ PERSONAL_INFO_FILE =Path( os.getcwd()+'/'+'itenerary.json')
 WALL_FILE =Path( os.getcwd()+'/'+'locus.json')
 PROJ_FILE=Path( os.getcwd()+'/'+'memento.json')
 # Backup constants
-# BASE_DIR = 'C:\\Users'
-
-
 
 FOLDER_PATH = Path(os.getcwd()+"/"+'Backup')
 REPO_PATH = Path(os.getcwd()+"/"+"..")
@@ -58,17 +55,21 @@ COMMIT_MESSAGE = "Made some changes"
 BRANCH = 'main'
 FILES_TO_TRACK = FOLDER_NAME
 
+# OS
+windows = 'windows' in platform.platform().lower()
+linux = 'linux' in platform.platform().lower()
+
 # OS BASED VARIABLES
-if 'windows' in platform.platform().lower():
+if windows:
     os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exist_ok=True)
     BACKUP_DIR=f'c:/Users/{pa.getuser()}/.backup'
-elif 'linux' in platform.platform().lower():
+elif linux:
     if not os.path.exists(f"/home/{pa.getuser()}/.backup"):
         subprocess.run(["sudo","mkdir",f"/home/{pa.getuser()}/.backup"])
     BACKUP_DIR=f"/home/{pa.getuser()}/.backup"
 
 # Setting font color to green
-if 'windows' in platform.platform().lower():
+if windows:
     os.system('color 2')
     
 
@@ -159,17 +160,17 @@ def zip_file_func(zip_file_path,folder_path,target_dir=''):
             else:
                 zip_file.write(folder_path)
         if "Backup" in zip_file_path and not os.path.exists(target_dir+"/"+zip_file_path):
-            if "windows" in platform.platform().lower():
+            if windows:
                 shutil.move(zip_file_path,target_dir) 
-            elif "linux" in platform.platform().lower():
+            elif linux:
                 subprocess.run(f"sudo mv {zip_file_path} {target_dir}",shell=True)
                 
         elif "Backup" in zip_file_path and os.path.exists(target_dir+"/"+zip_file_path):
             
-            if "windows" in platform.platform().lower():
+            if windows:
                 os.remove(target_dir+"/"+zip_file_path) 
                 shutil.move(zip_file_path,target_dir) 
-            elif "linux" in platform.platform().lower():
+            elif linux:
                 subprocess.run(f"sudo rm -rf {target_dir}/{zip_file_path}",shell=True)
                 subprocess.run(f"sudo mv {zip_file_path} {target_dir}",shell=True)
                 
@@ -213,8 +214,10 @@ def backup():
             shutil.copy(WALL_FILE, FOLDER_PATH)
         if os.path.exists(PROJ_FILE):    
             shutil.copy(PROJ_FILE, FOLDER_PATH)
+        if os.path.exists(FILE_VAULT_PATH):    
+            shutil.copy(FILE_VAULT_PATH, FOLDER_PATH)    
         zip_file_func(zip_file_path=ZIP_FILE_PATH,folder_path=FOLDER_PATH,target_dir=BACKUP_DIR)
-        if "window" in platform.platform().lower():
+        if windows:
             subprocess.run(f"attrib +h +s +r {BACKUP_DIR}",shell=True,check=True)
 
 
@@ -366,9 +369,9 @@ def seedphrase_ocr(image_path):
 
 # Clearing console function
 def clear_console():
-    if 'windows' in platform.platform().lower():
+    if windows:
         subprocess.run("cls",shell=True)
-    elif 'linux' in platform.platform().lower() or "mac" in platform.platform().lower() :
+    elif linux or "mac" in platform.platform().lower() :
         subprocess.run("clear",shell=True)
     else:
         print("Dang what Os is that?")
@@ -509,7 +512,7 @@ class essentials():
                     
                     while action_choice not in action_choices:
                         print('invalid input'.upper())
-                        action_choice = input('Would you like to create | retrieve | list emails? '.upper()).lower()
+                        action_choice = input('Would you like to create | retrieve | list emails | exit? '.upper()).lower()
                     if action_choice =='retrieve':
                         mail_address = input('Enter the e-mail address: '.upper())
                         value=cls.passwd_dict.get(mail_address,'invalid account or username')
@@ -547,7 +550,7 @@ class essentials():
                     action_choice = input('Would you like to create | retrieve | list accounts | exit? '.upper()).lower()
                     while action_choice not in action_choices:
                         print('invalid input'.upper())
-                        action_choice = input('Would you like to create | retrieve | list accounts? '.upper()).lower()
+                        action_choice = input('Would you like to create | retrieve | list accounts | exit? '.upper()).lower()
                     if action_choice == "retrieve":
                         acc=input('Enter the a/c: '.upper())
                         username=input('enter your username: '.upper())
@@ -736,23 +739,28 @@ class essentials():
                     if file_action_choice == "retrieve":
                         if os.path.exists(zip_file_path):
                             extract_folder = str(REPO_PATH)+"/"+FILE_EXTRACT_FOLDER_PATH
-                            path_file = input("enter the name of thefile you would like to retrieve: ".upper()).strip()
-                            back_to_zip = input("would you like to delete the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
-                            while back_to_zip not in ['y','n']:
-                                print("invalid choice")
-                                back_to_zip = input("would you like to secure the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
+                            path_file = input("enter the name of the file you would like to retrieve: ".upper()).strip()
                             if not os.path.exists(extract_folder):    
                                 os.makedirs(extract_folder)
                                 
                             with pyzipper.AESZipFile(zip_file_path, 'r') as zip_file:
                                 zip_file.setpassword(zip_pass)
-                                zip_file.extract(path_file,path=extract_folder)
-                                print(f"You can access the file here {extract_folder}")
-                            if back_to_zip == 'y':
-                                done = input("press enter to delete the file: ".upper()).strip()
-                                if done == "" or done:
-                                    shutil.rmtree(extract_folder)
-                                    print("The file has been deleted".upper())
+                                if path_file in zip_file.namelist():
+                                    zip_file.extract(path_file,path=extract_folder)
+                                    print(f"You can access the file here {extract_folder}")
+                                    back_to_zip = input("would you like to delete the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
+                                    while back_to_zip not in ['y','n']:
+                                        print("invalid choice")
+                                        back_to_zip = input("would you like to secure the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
+                                    if back_to_zip == 'y':
+                                        done = input("press enter to delete the file: ".upper()).strip()
+                                        if done == "" or done:
+                                            shutil.rmtree(extract_folder)
+                                            print("The file has been deleted".upper())
+                                else:
+                                    print("That file is not in the vault".upper())
+                                   
+                           
                         else:
                             print("the vault is empty!".upper())
                     elif file_action_choice == "secure":
