@@ -1,3 +1,48 @@
+# 🔐 SecureHaven Password Vault
+
+A comprehensive, military-grade encrypted password management system designed for security professionals, cryptocurrency enthusiasts, and privacy-conscious users. Features advanced encryption, Web3 wallet management, and intelligent backup systems.
+
+## ✨ Key Features
+
+• **🛡️ Military-Grade Security** - XSalsa20Poly1305 encryption with Argon2id key derivation
+• **💰 Web3 Integration** - Cryptocurrency wallet management with OCR seed phrase extraction
+• **🔄 Intelligent Backup** - Automated local and Git-based cloud synchronization
+• **📁 File Vault** - Encrypt and store sensitive documents and folders
+• **🔍 Universal Search** - Quick access to email, account, and wallet credentials
+• **🤫 Secret Management** - Timestamped personal secret storage with additional protection
+• **🌐 Cross-Platform** - Full Windows and Linux support with mobile-ready architecture
+
+## 🎯 Perfect For
+
+- Security professionals managing multiple client credentials
+- Cryptocurrency traders with multiple wallets and seed phrases
+- Developers needing secure storage for API keys and certificates
+- Privacy enthusiasts requiring offline-first password management
+- Teams needing secure credential sharing with audit trails
+
+## 🔒 Security Architecture
+
+Built on proven cryptographic primitives with a zero-trust security model. All data is encrypted locally before storage, ensuring your secrets remain private even if storage is compromised.
+
+**Encryption Stack:**
+- XSalsa20 stream cipher for data encryption
+- Poly1305 for authenticated encryption
+- Argon2id for password-based key derivation
+- Cryptographically secure random number generation
+
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+pip install pyzipper requests pyperclip pynacl paddleocr
+
+# Run the vault
+python password_vault.py
+See Installation Guide for detailed setup instructions.
+
+📊 Project Stats
+PythonEncryptionPlatformLicense
+
 # 🔐 Secure Password Vault
 
 A comprehensive, military-grade encrypted password management system with advanced security features, backup capabilities, and multi-platform support. Built with Python and designed for maximum security and usability.
