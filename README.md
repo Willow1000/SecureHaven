@@ -2,20 +2,6 @@
 
 A comprehensive, military-grade encrypted password management system with advanced security features, backup capabilities, and multi-platform support. Built with Python and designed for maximum security and usability.
 
-## 📋 Table of Contents
-
-- [Features](#-features)
-- [Security Architecture](#-security-architecture)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Detailed Usage](#-detailed-usage)
-- [File Structure](#-file-structure)
-- [Backup & Recovery](#-backup--recovery)
-- [Security Considerations](#-security-considerations)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
-- [License](#-license)
-
 ## 🚀 Features
 
 ### Core Security Features
@@ -269,6 +255,7 @@ Frequency: Real-time change detection
 Git Backup
 Trigger: After successful local backup
 Location: Private GitHub repository
+Disclaimer: repo should be private and account should have 2FA authentication coupled with Authenticator App
 Security: Repository isolation, safe directory configuration
 Frequency: Synchronized with local backup
 Recovery Procedures
