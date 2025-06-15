@@ -9,7 +9,6 @@ import random as rd
 import re
 import getpass as pa
 from time import sleep
-from cryptography.fernet import Fernet
 import pyperclip
 from getpass import getpass
 from datetime import datetime
@@ -18,7 +17,6 @@ from pathlib import Path
 from nacl.secret import SecretBox
 from nacl.pwhash import argon2id
 from nacl.utils import random
-
 
 
 FOLDER_NAME = 'production'
@@ -309,10 +307,10 @@ def push_to_github(commit_message=COMMIT_MESSAGE, branch=BRANCH, folder_name=FOL
 
 # PASSWORD FUNCTIONS
 def generate_secure_password():
-    lower = 'abcdefghijklmnopqrstuvwxyz'
+    lower = 'abcdefghijklmnopqrstuvwxyz '
     upper = lower.upper()
-    number = '0123456789'
-    symbols = '!@#$%^&*,?'
+    number = '0123456789 '
+    symbols = '!@#$%^&*,? '
 
     character_set = lower + upper + number + symbols
     length = int(input('How many characters would you like your password to have? '.upper()))
