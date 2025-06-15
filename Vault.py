@@ -73,13 +73,11 @@ KEY_SIZE = SecretBox.KEY_SIZE
 OPS_LIMIT = argon2id.OPSLIMIT_MODERATE
 MEM_LIMIT = argon2id.MEMLIMIT_MODERATE
 
-PASSWORD = "SOME"
+PASSWORD = '' #replace with secure password 
 # Setting font color to green
 if windows:
     os.system('color 2')
     
-
-
 # FILE OPERATION FUNCTIONS
 
 # Decrypting function
@@ -468,7 +466,6 @@ class PasswordManager():
                 clear_screen()
                 return True
     @classmethod            
-    
     def create_new_user(cls):
         vault_user_name = input('enter your vault username: '.upper())
         cls.username = vault_user_name
