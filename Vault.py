@@ -34,8 +34,8 @@ SECRETS_STORAGE_FILE = Path(os.getcwd()+"/"+'essentials.json')
 USER_INFO_FILE = Path(os.getcwd()+'/'+'itenerary.json')
 WALLET_STORAGE_FILE = Path(os.getcwd()+'/'+'locus.json')
 PROJECT_STORAGE_FILE = Path(os.getcwd()+'/'+'memento.json')
-# Backup constants
 
+# Backup constants
 BACKUP_FOLDER_PATH = Path(os.getcwd()+"/"+'Backup')
 REPOSITORY_PATH = Path(os.getcwd()+"/"+"..")
 BACKUP_ZIP_FILE_PATH = "Backup.zip"
@@ -49,7 +49,6 @@ PROJECT_FILE_NAME = "memento.json"
 USER_INFO_FILE_NAME = 'itenerary.json'
 
 # Github constants
-
 COMMIT_MESSAGE = "Made some changes"
 BRANCH = 'main'
 FILES_TO_TRACK = FOLDER_NAME
@@ -66,6 +65,7 @@ elif linux:
     if not os.path.exists(f"/home/{pa.getuser()}/.backup"):
         subprocess.run(["sudo","mkdir",f"/home/{pa.getuser()}/.backup"])
     BACKUP_DIR = f"/home/{pa.getuser()}/.backup"
+
 # ENCRYPTION CONSTANTS
 SALT_SIZE = 16
 NONCE_SIZE = SecretBox.NONCE_SIZE
@@ -73,16 +73,16 @@ KEY_SIZE = SecretBox.KEY_SIZE
 OPS_LIMIT = argon2id.OPSLIMIT_MODERATE
 MEM_LIMIT = argon2id.MEMLIMIT_MODERATE
 
-PASSWORD = '' #replace with secure password 
+PASSWORD = "SOME"
 # Setting font color to green
 if windows:
     os.system('color 2')
     
+
+
 # FILE OPERATION FUNCTIONS
 
 # Decrypting function
-
-
 def derive_key(password: str,salt: bytes) -> bytes:
     return argon2id.kdf(KEY_SIZE,password.encode(),salt,opslimit = OPS_LIMIT,memlimit=MEM_LIMIT)
 
@@ -167,64 +167,45 @@ def create_encrypted_backup(zip_file_path, folder_path, target_directory=''):
                 shutil.move(zip_file_path, target_directory) 
             elif linux:
                 subprocess.run(f"sudo mv {zip_file_path} {target_directory}", shell=True)
+                subprocess.run(f'sudo chmod 444 {BACKUP_DIR}/{BACKUP_ZIP_FILE_PATH}',shell=True)
                 
         elif "Backup" in zip_file_path and os.path.exists(target_directory+"/"+zip_file_path):
-            
             if windows:
                 os.remove(target_directory+"/"+zip_file_path) 
                 shutil.move(zip_file_path, target_directory) 
             elif linux:
                 subprocess.run(f"sudo rm -rf {target_directory}/{zip_file_path}", shell=True)
                 subprocess.run(f"sudo mv {zip_file_path} {target_directory}", shell=True)
+                subprocess.run(f'sudo chmod 444 {BACKUP_DIR}/{BACKUP_ZIP_FILE_PATH}',shell=True)
                 
                 
         shutil.rmtree(folder_path)  
     
             
 def backup_all_files():
-
-    if os.path.exists(BACKUP_FOLDER_PATH):
-        if os.path.exists(PASSWORD_STORAGE_FILE):
-            shutil.copy(PASSWORD_STORAGE_FILE, os.path.join(BACKUP_FOLDER_PATH, PASSWORD_FILE_NAME))
-
-
-        if os.path.exists(USER_INFO_FILE):
-            shutil.copy(USER_INFO_FILE, os.path.join(BACKUP_FOLDER_PATH, USER_INFO_FILE_NAME))    
-        if os.path.exists(SECRETS_STORAGE_FILE):
-            shutil.copy(SECRETS_STORAGE_FILE, os.path.join(BACKUP_FOLDER_PATH, SECRETS_FILE_NAME))
-        if os.path.exists(WALLET_STORAGE_FILE):
-            shutil.copy(WALLET_STORAGE_FILE, os.path.join(BACKUP_FOLDER_PATH, WALLET_FILE_NAME))
-        if os.path.exists(PROJECT_STORAGE_FILE):    
-            shutil.copy(PROJECT_STORAGE_FILE, os.path.join(BACKUP_FOLDER_PATH, PROJECT_FILE_NAME))
-        if os.path.exists(SECURE_VAULT_ZIP_PATH):    
-            shutil.copy(SECURE_VAULT_ZIP_PATH, os.path.join(BACKUP_FOLDER_PATH, SECURE_VAULT_ZIP_PATH))    
-
-        if "window" in platform.platform().lower():
-            subprocess.run(f"attrib +h +s +r {BACKUP_DIR}", shell=True, check=True)    
-    else:
-        os.makedirs(BACKUP_FOLDER_PATH, exist_ok=True)
-        if os.path.exists(USER_INFO_FILE):
-            shutil.copy(USER_INFO_FILE, BACKUP_FOLDER_PATH)
-        if os.path.exists(PASSWORD_STORAGE_FILE):
-            shutil.copy(PASSWORD_STORAGE_FILE, BACKUP_FOLDER_PATH)
-        if os.path.exists(SECRETS_STORAGE_FILE):
-            shutil.copy(SECRETS_STORAGE_FILE, BACKUP_FOLDER_PATH)
-        if os.path.exists(WALLET_STORAGE_FILE):
-            shutil.copy(WALLET_STORAGE_FILE, BACKUP_FOLDER_PATH)
-        if os.path.exists(PROJECT_STORAGE_FILE):    
-            shutil.copy(PROJECT_STORAGE_FILE, BACKUP_FOLDER_PATH)
-        if os.path.exists(SECURE_VAULT_ZIP_PATH):    
-            shutil.copy(SECURE_VAULT_ZIP_PATH, BACKUP_FOLDER_PATH)    
-        create_encrypted_backup(zip_file_path=BACKUP_ZIP_FILE_PATH, folder_path=BACKUP_FOLDER_PATH, target_directory=BACKUP_DIR)
-        if windows:
-            try:
-                import win32api, win32con
-                win32api.SetFileAttributes(BACKUP_DIR, 
-                                          win32con.FILE_ATTRIBUTE_HIDDEN | 
-                                          win32con.FILE_ATTRIBUTE_SYSTEM | 
-                                          win32con.FILE_ATTRIBUTE_READONLY)
-            except ImportError:
-                subprocess.run(f"attrib +h +s +r {BACKUP_DIR}", shell=True, check=True)
+    os.makedirs(BACKUP_FOLDER_PATH, exist_ok=True)
+    if os.path.exists(USER_INFO_FILE):
+        shutil.copy(USER_INFO_FILE, BACKUP_FOLDER_PATH)
+    if os.path.exists(PASSWORD_STORAGE_FILE):
+        shutil.copy(PASSWORD_STORAGE_FILE, BACKUP_FOLDER_PATH)
+    if os.path.exists(SECRETS_STORAGE_FILE):
+        shutil.copy(SECRETS_STORAGE_FILE, BACKUP_FOLDER_PATH)
+    if os.path.exists(WALLET_STORAGE_FILE):
+        shutil.copy(WALLET_STORAGE_FILE, BACKUP_FOLDER_PATH)
+    if os.path.exists(PROJECT_STORAGE_FILE):    
+        shutil.copy(PROJECT_STORAGE_FILE, BACKUP_FOLDER_PATH)
+    if os.path.exists(SECURE_VAULT_ZIP_PATH):    
+        shutil.copy(SECURE_VAULT_ZIP_PATH, BACKUP_FOLDER_PATH)    
+    create_encrypted_backup(zip_file_path=BACKUP_ZIP_FILE_PATH, folder_path=BACKUP_FOLDER_PATH, target_directory=BACKUP_DIR)
+    if windows:
+        try:
+            import win32api, win32con
+            win32api.SetFileAttributes(BACKUP_DIR, 
+                                        win32con.FILE_ATTRIBUTE_HIDDEN | 
+                                        win32con.FILE_ATTRIBUTE_SYSTEM | 
+                                        win32con.FILE_ATTRIBUTE_READONLY)
+        except ImportError:
+            subprocess.run(f"attrib +h +s +r {BACKUP_DIR}", shell=True, check=True)
 
 
 # Github Backup function 
@@ -416,6 +397,7 @@ class PasswordManager():
         projects_dictionary = decrypt_file(file_path=PROJECT_STORAGE_FILE,password = PASSWORD)
     else:
         projects_dictionary = {}
+        
     @classmethod  
     def authenticate_user(cls):
         if os.path.exists(USER_INFO_FILE): 
@@ -465,6 +447,7 @@ class PasswordManager():
                 cls.password = vault_password
                 clear_screen()
                 return True
+
     @classmethod            
     def create_new_user(cls):
         vault_user_name = input('enter your vault username: '.upper())
@@ -523,8 +506,8 @@ class PasswordManager():
                         action_choice = input('Would you like to create | retrieve | list emails | exit? '.upper()).lower()
                     if action_choice == 'retrieve':
                         mail_address = input('Enter the e-mail address: '.upper())
-                        value = cls.password_dictionary.get(mail_address, 'invalid account or username')
-                        if value == 'invalid account or username':
+                        value = cls.password_dictionary.get(mail_address, 'email not found')
+                        if value == 'email not found':
                             print(value.upper())
                         else:
                             pyperclip.copy(value)    
@@ -613,8 +596,8 @@ class PasswordManager():
                             wallet_email = input("enter email associated with wallet: ".upper()).strip()
                                
                             account_identifier = app_name + ' ' + wallet_name + ' ' + wallet_email
-                            value = cls.wallet_dictionary.get(account_identifier, 'invalid account or username')
-                            if value == 'invalid account or username':
+                            value = cls.wallet_dictionary.get(account_identifier, 'Wallet with those particulars does not exist!')
+                            if value == 'Wallet with those particulars does not exist!':
                                 print(value.upper())
                             else:
                                 pyperclip.copy(value)    
@@ -671,8 +654,8 @@ class PasswordManager():
                             project_username = input("enter name of the wallet: ".upper()).strip().strip()
                             project_email = input("enter email associated with wallet: ".upper()).strip().strip()
                             account_identifier = project_name + ' ' + project_username + ' ' + project_email
-                            value = cls.projects_dictionary.get(account_identifier, 'invalid account or username')
-                            if value == 'invalid account or username':
+                            value = cls.projects_dictionary.get(account_identifier, 'Project with those particulars does not exist!')
+                            if value == 'Project with those particulars does not exist!':
                                 print(value.upper())
                             else:
                                 pyperclip.copy(value)    
@@ -833,6 +816,7 @@ class PasswordManager():
                 break
             else:
                 print('invalid input'.upper())
+
 # Logic
 def run_password_vault():
     membership_verified = PasswordManager.authenticate_user()
@@ -855,9 +839,7 @@ def run_password_vault():
 if __name__ == '__main__':
     run_password_vault()
     os.chdir(REPOSITORY_PATH)
-    
     try:
-        
         response = requests.get('https://www.google.com', timeout=5)
         if response.status_code == 200:
                         
