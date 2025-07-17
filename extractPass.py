@@ -25,13 +25,13 @@ import platform      # For operating system detection
 
 if 'windows' in platform.platform().lower():
     # Windows backup location in user's hidden .backup directory
-    zip_file_path = f'c:/Users/{getpass.getuser()}/.backup/Backup.zip'
+    zip_file_path = f'c:/Users/{getpass.getuser()}/Favorites/.backup/Backup.zip'
 elif 'linux' in platform.platform().lower():
     # Linux backup location in user's home hidden .backup directory  
     zip_file_path = f'/home/{getpass.getuser()}/.backup/Backup.zip'
 
 # Target extraction directory (will be created if it doesn't exist)
-extract_folder = "production1"
+extract_folder = "production"
 
 # ============================================================================
 # BACKUP EXTRACTION FUNCTION
