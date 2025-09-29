@@ -20,12 +20,50 @@ from nacl.utils import random
 
 
 FOLDER_NAME = 'production'
+# OS
+windows = 'windows' in platform.platform().lower()
+linux = 'linux' in platform.platform().lower()
+
+# OS BASED VARIABLES
+if windows:
+    os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exist_ok=True)
+    BACKUP_DIR = f'c:/Users/{pa.getuser()}/.backup'
+elif linux:
+    if not os.path.exists(f"/home/{pa.getuser()}/.backup"):
+        subprocess.run(["sudo","mkdir",f"/home/{pa.getuser()}/.backup"])
+    BACKUP_DIR = f"/home/{pa.getuser()}/.backup"
+def extract_zip_with_password():
+    if os.path.exists(FOLDER_NAME):
+        return False
+
+    else:
+        
+        os.makedirs(FOLDER_NAME)
+
+        zip_file_path = BACKUP_DIR+"/Backup.zip"
+        if not os.path.exists(zip_file_path):
+            print('Backup does not exist!'.capitalize())
+            return False
+            # exit()
+        print("Backup File Located initiating retrieval...")
+        password = input('Enter password to Unlock  Backup file: '.capitalize()).encode('utf-8')
+        # extract_zip_with_password(zip_file_path, FOLDER_NAME, password)    
+        with pyzipper.AESZipFile(zip_file_path, 'r') as zip_file:
+            try:
+                zip_file.setpassword(password)
+                zip_file.extractall('production')
+                print("Backup successfully extracted to production")
+                os.chdir(FOLDER_NAME)
+                return True
+            except Exception as e:
+                print(f'An error occured: {e}')    
+                return False
+
 
 if os.path.exists(FOLDER_NAME):
     os.chdir(FOLDER_NAME)
 else:
-    os.mkdir(FOLDER_NAME)
-    os.chdir(FOLDER_NAME) 
+    extract_zip_with_password()
 # CONSTANTS
 
 # File name constants
@@ -53,19 +91,6 @@ COMMIT_MESSAGE = "Made some changes"
 BRANCH = 'main'
 FILES_TO_TRACK = FOLDER_NAME
 
-# OS
-windows = 'windows' in platform.platform().lower()
-linux = 'linux' in platform.platform().lower()
-
-# OS BASED VARIABLES
-if windows:
-    os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exist_ok=True)
-    BACKUP_DIR = f'c:/Users/{pa.getuser()}/.backup'
-elif linux:
-    if not os.path.exists(f"/home/{pa.getuser()}/.backup"):
-        subprocess.run(["sudo","mkdir",f"/home/{pa.getuser()}/.backup"])
-    BACKUP_DIR = f"/home/{pa.getuser()}/.backup"
-
 # ENCRYPTION CONSTANTS
 SALT_SIZE = 16
 NONCE_SIZE = SecretBox.NONCE_SIZE
@@ -73,7 +98,7 @@ KEY_SIZE = SecretBox.KEY_SIZE
 OPS_LIMIT = argon2id.OPSLIMIT_MODERATE
 MEM_LIMIT = argon2id.MEMLIMIT_MODERATE
 
-PASSWORD = "SOME"
+PASSWORD = "SOME" #ideally store this in a .env file (os.getenv(<password variable>))
 # Setting font color to green
 if windows:
     os.system('color 2')
@@ -81,6 +106,13 @@ if windows:
 
 
 # FILE OPERATION FUNCTIONS
+# extract_folder = "production"
+
+
+
+
+# if __name__ == "__main__":
+    
 
 # Decrypting function
 def derive_key(password: str,salt: bytes) -> bytes:
@@ -313,6 +345,7 @@ def get_user_password():
         attempts_remaining -= 1
         if attempts_remaining == 0:
             print('maximum number of attempts exceeded,kindly try again later'.upper())
+            quit()
     return password        
 
 
@@ -409,6 +442,7 @@ class PasswordManager():
                 username_attempts_remaining -= 1
                 if username_attempts_remaining == 0:
                     print('maximum number of attempts reached'.upper())
+                    quit()
                     return False
             vault_password = getpass('enter your vault password: '.upper()).strip()
             password_attempts_remaining = 3
@@ -432,7 +466,7 @@ class PasswordManager():
                             count += 1
                             if count == 3:
                                 print('maximum number of attempts reached'.upper())
-                                return False
+                                exit()
                         else:
                             cls.user_info_dictionary.pop(username)
                             cls.user_info_dictionary.update({username: new_passwd})
@@ -447,6 +481,8 @@ class PasswordManager():
                 cls.password = vault_password
                 clear_screen()
                 return True
+        else:
+            return False
 
     @classmethod            
     def create_new_user(cls):
@@ -820,12 +856,15 @@ class PasswordManager():
 # Logic
 def run_password_vault():
     membership_verified = PasswordManager.authenticate_user()
+    # backup_extracted = extract_zip_with_password()
     try:
         if membership_verified:
             PasswordManager.manage_vault_actions()
-        elif membership_verified == None:
+
+        else:
             PasswordManager.create_new_user()
             PasswordManager.manage_vault_actions()
+
     except Exception as error:
         print(f'an error occurred: {error.args}'.upper())
         return 
