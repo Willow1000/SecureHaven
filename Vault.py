@@ -354,7 +354,8 @@ def extract_seedphrase_from_image(image_path):
     if os.path.exists(image_path):
          pass
     else:
-        raise FileNotFoundError(f"The file {image_path} does not exist.")
+        print(f"The file {image_path} was not found.")
+        exit()
     from paddleocr import PaddleOCR
     import logging
     logging.getLogger('PaddleOCR').setLevel(logging.CRITICAL)
