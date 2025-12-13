@@ -608,11 +608,11 @@ class PasswordManager():
         while True:
             action_choices = ['create', 'retrieve', 'list', "exit", "clear"]
             activity_choices = ['email', 'account', "exit", "clear", cls.user_info_dictionary.get("secretPhrase"), "web3", "file","configure"]
-            activity_choice = input("email | account | web3 | file | clear | configure| exit'? ".upper()).lower()
+            activity_choice = input("email | account | web3 | file | clear | configure | exit'? ".upper()).lower()
             while activity_choice not in activity_choices:
                 print('invalid input'.upper())
                 
-                activity_choice = input("email | account | web3 | file | clear | configure| exit'? ".upper()).lower()
+                activity_choice = input("email | account | web3 | file | clear | configure | exit'? ".upper()).lower()
             if activity_choice == 'email':
                 while True:
 
