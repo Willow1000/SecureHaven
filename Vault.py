@@ -455,7 +455,6 @@ class PasswordManager():
         
     @classmethod  
     def authenticate_user(cls):
-        print(cls.user_info_dictionary)
         if os.path.exists(USER_INFO_FILE): 
             username = input('enter your vault username: '.upper())
             username_attempts_remaining = 3
