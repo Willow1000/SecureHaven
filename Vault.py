@@ -410,7 +410,7 @@ def extract_seedphrase_from_image(image_path):
 
 # Clearing console function
 def clear_screen():
-    sleep(2)
+    sleep(.9)
     if windows:
         subprocess.run("cls", shell=True)
     elif linux or "mac" in platform.platform().lower():
@@ -927,52 +927,57 @@ class PasswordManager():
             elif activity_choice == 'clear':
                 clear_screen()
             elif activity_choice == "configure":
-                choices = ["u","p","s","g"]
+                choices = ["u","p","s","g",'exit']
                 print("What account detail would you like to update?".upper())
-                choice= input("u(username) | p(password) | s(security questions) g(github): ".upper()).strip().lower()
-                while choice not in choices:
-                    print("invalid input!".upper())
-                    choice= input("u(username) | p(password) | s(security questions) g(github): ".upper()).strip().lower()
-                if choice == 'u':
-                    new_username = variable_input(var_name="username",maximum_attempts=3)
-                    if conf_security_questions(cls):
-                        cls.user_info_dictionary[new_username] = cls.user_info_dictionary.pop(cls.username)
-                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
-                        print('username succssefully updated!'.upper()) 
+                choice= input("u(username) | p(password) | s(security questions) g(github)| exit: ".upper()).strip().lower()
+                
+                while True:
+                    while choice not in choices:
+                        print("invalid input!".upper())
+                        choice= input("u(username) | p(password) | s(security questions) g(github)| exit: ".upper()).strip().lower()
+                    if choice == 'u':
+                        new_username = variable_input(var_name="username",maximum_attempts=3)
+                        if conf_security_questions(cls):
+                            cls.user_info_dictionary[new_username] = cls.user_info_dictionary.pop(cls.username)
+                            encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                            print('username succssefully updated!'.upper()) 
+                            clear_screen()
+                        else:
+                            print("Try again later".upper())
+                            break
+                    elif choice == 'p':
+                        new_passwd = variable_input(var_name="password",maximum_attempts=3)
+                        if conf_security_questions(cls):
+                            cls.user_info_dictionary[cls.username] = new_passwd
+                            encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                            print('password succssefully updated!'.upper()) 
+                            clear_screen() 
+                        else:
+                            print("Try again later".upper())
+                            break
+                    elif choice == 's':
+                        new_security_questions = collect_security_questions()
+                        if conf_security_questions(cls):
+                            cls.user_info_dictionary.update(new_security_questions)
+                            encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                            print('security questions succssefully updated!'.upper()) 
+                            clear_screen() 
+                        else:
+                            print("Try again later".upper())
+                            break
+                    elif choice == 'g':
+                        new_github_details =  collect_git_credentials()   
+                        if conf_security_questions(cls):
+                            cls.user_info_dictionary.update(new_github_details)
+                            encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                            print('github details succssefully updated!'.upper()) 
+                            clear_screen() 
+                        else:
+                            print("Try again later".upper())
+                            break
+                    elif choice == "exit":
                         clear_screen()
-                    else:
-                        print("Try again later".upper())
-                        return 
-                elif choice == 'p':
-                    new_passwd = variable_input(var_name="password",maximum_attempts=3)
-                    if conf_security_questions(cls):
-                        cls.user_info_dictionary[cls.username] = new_passwd
-                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
-                        print('password succssefully updated!'.upper()) 
-                        clear_screen() 
-                    else:
-                        print("Try again later".upper())
-                        return     
-                elif choice == 's':
-                    new_security_questions = collect_security_questions()
-                    if conf_security_questions(cls):
-                        cls.user_info_dictionary.update(new_security_questions)
-                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
-                        print('security questions succssefully updated!'.upper()) 
-                        clear_screen() 
-                    else:
-                        print("Try again later".upper())
-                        return    
-                elif choice == 'g':
-                    new_github_details =  collect_git_credentials()   
-                    if conf_security_questions(cls):
-                        cls.user_info_dictionary.update(new_github_details)
-                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
-                        print('github details succssefully updated!'.upper()) 
-                        clear_screen() 
-                    else:
-                        print("Try again later".upper())
-                        return          
+                        break    
             elif activity_choice == 'exit':
                 print('Your vault has been locked'.upper())
                 sleep(2.2)
