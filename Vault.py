@@ -37,9 +37,7 @@ def extract_zip_with_password():
         return False
 
     else:
-        
         os.makedirs(FOLDER_NAME)
-
         zip_file_path = BACKUP_DIR+"/Backup.zip"
         if not os.path.exists(zip_file_path):
             print('Backup does not exist!'.capitalize())
@@ -59,11 +57,15 @@ def extract_zip_with_password():
                 print(f'An error occured: {e}')    
                 return False
 
-
 if os.path.exists(FOLDER_NAME):
     os.chdir(FOLDER_NAME)
-else:
+elif os.path.exists(BACKUP_DIR):
     extract_zip_with_password()
+    os.chdir(FOLDER_NAME)
+else:
+    os.makedirs(FOLDER_NAME)
+    os.chdir(FOLDER_NAME)
+
 # CONSTANTS
 
 # File name constants
@@ -103,18 +105,9 @@ PASSWORD = "SOME" #ideally store this in a .env file (os.getenv(<password variab
 if windows:
     os.system('color 2')
     
-
-
 # FILE OPERATION FUNCTIONS
-# extract_folder = "production"
 
-
-
-
-# if __name__ == "__main__":
-    
-
-# Decrypting function
+# Encrypting-Decrypting functions
 def derive_key(password: str,salt: bytes) -> bytes:
     return argon2id.kdf(KEY_SIZE,password.encode(),salt,opslimit = OPS_LIMIT,memlimit=MEM_LIMIT)
 
@@ -146,23 +139,38 @@ def decrypt_file(password,file_path):
 
 # USER PERSONAL INFO FUNCTIONS
 
+def variable_input(var_name,maximum_attempts):
+    if var_name == "password":
+        input = getpass
+    new_var = input(f"enter new {var_name}: ".upper())
+    conf_new_var= input(f"confirm new {var_name}: ".upper())
+    wrong_attempts_count = 0
+    while conf_new_var != new_var:
+        print("invalid input!".upper())
+        wrong_attempts_count+=1
+        conf_new_username = input("confirm new username: ".upper())
+        print(f"{maximum_attempts-wrong_attempts_count} attempts left".upper())
+        if wrong_attempts_count >= maximum_attempts:
+            print("Attempts exceeded, Please try again later".upper())
+            return 
+
+    return new_var       
+
+def conf_security_questions(cls):
+    print("Answer the following emergency questions".upper())
+    security_questions_dict = collect_security_questions()
+    if security_questions_dict.get("nick_name") == cls.user_info_dictionary.get("nick_name") and security_questions_dict.get("city") == cls.user_info_dictionary.get("city") and security_questions_dict.get("color") == cls.user_info_dictionary.get("color"):
+        return True
+    else:
+        return False
+
 # Security questions function
 def collect_security_questions():
     city = getpass('in which city were you born? '.upper()).strip().lower()
     color = getpass('what is your favorite colour? '.upper()).strip().lower()
     nick_name = getpass('what was your childhood nickname? '.upper()).strip().lower()
-    retrival_pass = getpass("enter password you'll use for retrieval: ".upper()).strip()
-    conf_retrieval_pass = getpass("confirm the password you'll use for retrieval: ".upper()).strip()
-    attempts_remaining = 3
-    while conf_retrieval_pass != retrival_pass:
-        print(f'passwords do not match,please try again {attempts_remaining} more attempts remaining'.upper())
-        retrival_pass = getpass("enter password you'll use for retrieval: ".upper()).strip()
-        conf_retrieval_pass = getpass("confirm the password you'll use for retrieval: ".upper()).strip()
-        attempts_remaining -= 1
-        if attempts_remaining == 0:
-            print('maximum number of attempts exceeded,kindly try again later'.upper())
-            quit()
-    securityQuizDict = {'city': city, 'color': color, 'nick_name': nick_name, "retrival_pass": retrival_pass}
+   
+    securityQuizDict = {'city': city, 'color': color, 'nick_name': nick_name}
     return securityQuizDict
 
 def collect_git_credentials():
@@ -286,10 +294,14 @@ def push_to_github(commit_message=COMMIT_MESSAGE, branch=BRANCH, folder_name=FOL
 
                 print("✅ Changes pushed to GitHub successfully.")
             except subprocess.CalledProcessError as e:
-                print(f"❌ Git command failed: {e}")
-                print("⚠️ Removing .git directory to reset the repository...")
-                # subprocess.run(["rmdir", "/s", "/q", ".git"], check=True, shell=True)
-                print("🗑️ .git directory removed successfully")
+                try:
+                    subprocess.run(['git', 'push', '-u', 'origin', branch,'--force'], check=True)
+                    print("✅ Changes pushed to GitHub successfully.")
+                except subprocess.CalledProcessError as e:    
+                    print(f"❌ Git command failed: {e}")
+                    print("⚠️ Removing .git directory to reset the repository...")
+                    # subprocess.run(["rmdir", "/s", "/q", ".git"], check=True)
+                    print("🗑️ .git directory removed successfully")
         else:
             try:
                 # Mark the repo as safe
@@ -302,10 +314,14 @@ def push_to_github(commit_message=COMMIT_MESSAGE, branch=BRANCH, folder_name=FOL
                 subprocess.run(['git', 'push', '-u', 'origin', branch], check=True)
                 print("✅ Changes pushed to GitHub successfully.")
             except subprocess.CalledProcessError as e:
-                print(f"❌ Git command failed: {e}")
-                print("⚠️ Removing .git directory to reset the repository...")
-                # subprocess.run(["rmdir", "/s", "/q", ".git"], check=True)
-                print("🗑️ .git directory removed successfully")
+                try:
+                    subprocess.run(['git', 'push', '-u', 'origin', branch,'--force'], check=True)
+                    print("✅ Changes pushed to GitHub successfully.")
+                except subprocess.CalledProcessError as e:    
+                    print(f"❌ Git command failed: {e}")
+                    print("⚠️ Removing .git directory to reset the repository...")
+                    # subprocess.run(["rmdir", "/s", "/q", ".git"], check=True)
+                    print("🗑️ .git directory removed successfully")
     except FileNotFoundError as e:
         print(f"❌ {e}")
         # subprocess.run(["rmdir", "/s", "/q", ".git"], check=True, shell=True)
@@ -351,11 +367,15 @@ def get_user_password():
 
 # OCR FUNCTION
 def extract_seedphrase_from_image(image_path):
-    if os.path.exists(image_path):
-         pass
-    else:
-        print(f"The file {image_path} was not found.")
-        exit()
+    image_path_entry_count = 0
+    while not os.path.exists(image_path):
+        print("invalid image path!".upper())
+        image_path = input("Enter a valid image path: ".capitalize())
+        image_path_entry_count+=1
+        
+        if image_path_entry_count == 3:
+            print(f"The file {image_path} was not found.")
+            exit()
     from paddleocr import PaddleOCR
     import logging
     logging.getLogger('PaddleOCR').setLevel(logging.CRITICAL)
@@ -390,6 +410,7 @@ def extract_seedphrase_from_image(image_path):
 
 # Clearing console function
 def clear_screen():
+    sleep(2)
     if windows:
         subprocess.run("cls", shell=True)
     elif linux or "mac" in platform.platform().lower():
@@ -434,6 +455,7 @@ class PasswordManager():
         
     @classmethod  
     def authenticate_user(cls):
+        print(cls.user_info_dictionary)
         if os.path.exists(USER_INFO_FILE): 
             username = input('enter your vault username: '.upper())
             username_attempts_remaining = 3
@@ -499,6 +521,17 @@ class PasswordManager():
             if attempts_remaining == 0:
                 print('too many attempts try again later'.upper())
                 exit()
+        retrival_pass = getpass("enter password you'll use for retrieval: ".upper()).strip()
+        conf_retrieval_pass = getpass("confirm the password you'll use for retrieval: ".upper()).strip()
+        attempts_remaining = 3
+        while conf_retrieval_pass != retrival_pass:
+            print(f'passwords do not match,please try again {attempts_remaining} more attempts remaining'.upper())
+            retrival_pass = getpass("enter password you'll use for retrieval: ".upper()).strip()
+            conf_retrieval_pass = getpass("confirm the password you'll use for retrieval: ".upper()).strip()
+            attempts_remaining -= 1
+            if attempts_remaining == 0:
+                print('maximum number of attempts exceeded,kindly try again later'.upper())
+                quit()        
         secretPhrase = getpass('set your secret phrase: '.upper()).strip()
         conf_secretPhrase = getpass('confirm your secret phrase: '.upper()).strip()
         attempts_remaining = 3
@@ -516,23 +549,71 @@ class PasswordManager():
             security_info_dict.update({vault_user_name: vault_pass})
             git_info_dict = collect_git_credentials()
             security_info_dict.update(git_info_dict)
+            security_info_dict.update({"retrival_pass": retrival_pass})
             cls.user_info_dictionary.update(security_info_dict)
             encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
             print('account succssefully created!'.upper()) 
             clear_screen()
-        return True 
+        return True  
+    @classmethod
+    def details_update(cls):
+        choices = ["u","p","s","g"]
+        print("What account detail would you like to update?")
+        choice= input("u(username) | p(password) | s(security questions) g(github): ").strip().lower()
+        while choice not in choices:
+            print("invalid input!")
+            choice= input("u(username) | p(password) | s(security questions)").strip().lower()
+        if choice == 'u':
+            new_username = variable_input(var_name="username",maximum_attempts=3)
+            if conf_security_questions(cls):
+                cls.user_info_dictionary[new_username] = cls.user_info_dictionary.pop(cls.username)
+                encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                print('username succssefully updated!'.upper()) 
+                clear_screen()
+            else:
+                print("Try again later")
+                return 
+        elif choice == 'p':
+            new_passwd = variable_input(var_name="password",maximum_attempts=3)
+            if conf_security_questions(cls):
+                cls.user_info_dictionary[cls.username] = new_passwd
+                encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                print('password succssefully updated!'.upper()) 
+                clear_screen() 
+            else:
+                print("Try again later")
+                return 
+
+        elif choice == 's':
+            new_security_questions = collect_security_questions()
+            if conf_security_questions(cls):
+                cls.user_info_dictionary.update(new_security_questions)
+                return 
+            else:
+                print("Try again later")
+                return 
+        elif choice == 'g':
+            new_github_details = collect_git_credentials()
+            if conf_security_questions(cls):
+                cls.user_info_dictionary.update(new_github_details)
+                return 
+            else:
+                print("Try again later")
+                return 
+
 
     @classmethod
     def manage_vault_actions(cls):
+        
         print(f'olaa, {cls.username} welcome to your vault'.upper())
         while True:
             action_choices = ['create', 'retrieve', 'list', "exit", "clear"]
-            activity_choices = ['email', 'account', "exit", "clear", cls.user_info_dictionary.get("secretPhrase"), "web3", "file"]
-            activity_choice = input("email | account | web3 | file | clear | exit'? ".upper()).lower()
+            activity_choices = ['email', 'account', "exit", "clear", cls.user_info_dictionary.get("secretPhrase"), "web3", "file","configure"]
+            activity_choice = input("email | account | web3 | file | clear | configure| exit'? ".upper()).lower()
             while activity_choice not in activity_choices:
                 print('invalid input'.upper())
                 
-                activity_choice = input("email | account | web3 | file | clear | exit'? ".upper()).lower()
+                activity_choice = input("email | account | web3 | file | clear | configure| exit'? ".upper()).lower()
             if activity_choice == 'email':
                 while True:
 
@@ -846,6 +927,53 @@ class PasswordManager():
                         break
             elif activity_choice == 'clear':
                 clear_screen()
+            elif activity_choice == "configure":
+                choices = ["u","p","s","g"]
+                print("What account detail would you like to update?".upper())
+                choice= input("u(username) | p(password) | s(security questions) g(github): ".upper()).strip().lower()
+                while choice not in choices:
+                    print("invalid input!".upper())
+                    choice= input("u(username) | p(password) | s(security questions) g(github): ".upper()).strip().lower()
+                if choice == 'u':
+                    new_username = variable_input(var_name="username",maximum_attempts=3)
+                    if conf_security_questions(cls):
+                        cls.user_info_dictionary[new_username] = cls.user_info_dictionary.pop(cls.username)
+                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                        print('username succssefully updated!'.upper()) 
+                        clear_screen()
+                    else:
+                        print("Try again later".upper())
+                        return 
+                elif choice == 'p':
+                    new_passwd = variable_input(var_name="password",maximum_attempts=3)
+                    if conf_security_questions(cls):
+                        cls.user_info_dictionary[cls.username] = new_passwd
+                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                        print('password succssefully updated!'.upper()) 
+                        clear_screen() 
+                    else:
+                        print("Try again later".upper())
+                        return     
+                elif choice == 's':
+                    new_security_questions = collect_security_questions()
+                    if conf_security_questions(cls):
+                        cls.user_info_dictionary.update(new_security_questions)
+                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                        print('security questions succssefully updated!'.upper()) 
+                        clear_screen() 
+                    else:
+                        print("Try again later".upper())
+                        return    
+                elif choice == 'g':
+                    new_github_details =  collect_git_credentials()   
+                    if conf_security_questions(cls):
+                        cls.user_info_dictionary.update(new_github_details)
+                        encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                        print('github details succssefully updated!'.upper()) 
+                        clear_screen() 
+                    else:
+                        print("Try again later".upper())
+                        return          
             elif activity_choice == 'exit':
                 print('Your vault has been locked'.upper())
                 sleep(2.2)
