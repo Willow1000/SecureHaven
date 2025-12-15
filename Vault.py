@@ -140,15 +140,17 @@ def decrypt_file(password,file_path):
 # USER PERSONAL INFO FUNCTIONS
 
 def variable_input(var_name,maximum_attempts):
-    if var_name == "password":
-        input = getpass
-    new_var = input(f"enter new {var_name}: ".upper())
-    conf_new_var= input(f"confirm new {var_name}: ".upper())
+    if var_name == "password" or var_name=="secret phrase":
+        Input = getpass
+    else:
+        Input = input   
+    new_var = Input(f"enter new {var_name}: ".upper())
+    conf_new_var= Input(f"confirm new {var_name}: ".upper())
     wrong_attempts_count = 0
     while conf_new_var != new_var:
         print("invalid input!".upper())
         wrong_attempts_count+=1
-        conf_new_username = input("confirm new username: ".upper())
+        conf_new_username = Input("confirm new username: ".upper())
         print(f"{maximum_attempts-wrong_attempts_count} attempts left".upper())
         if wrong_attempts_count >= maximum_attempts:
             print("Attempts exceeded, Please try again later".upper())
@@ -608,11 +610,11 @@ class PasswordManager():
         while True:
             action_choices = ['create', 'retrieve', 'list', "exit", "clear"]
             activity_choices = ['email', 'account', "exit", "clear", cls.user_info_dictionary.get("secretPhrase"), "web3", "file","configure"]
-            activity_choice = input("email | account | web3 | file | clear | configure | exit'? ".upper()).lower()
+            activity_choice = input("email | account | web3 | file | configure | clear | exit'? ".upper()).lower()
             while activity_choice not in activity_choices:
                 print('invalid input'.upper())
                 
-                activity_choice = input("email | account | web3 | file | clear | configure | exit'? ".upper()).lower()
+                activity_choice = input("email | account | web3 | file | configure | clear | exit'? ".upper()).lower()
             if activity_choice == 'email':
                 while True:
 
@@ -927,14 +929,14 @@ class PasswordManager():
             elif activity_choice == 'clear':
                 clear_screen()
             elif activity_choice == "configure":
-                choices = ["u","p","s","g",'exit']
+                choices = ["u","p","s","g","sp",'exit']
                 print("What account detail would you like to update?".upper())
-                choice= input("u(username) | p(password) | s(security questions) g(github)| exit: ".upper()).strip().lower()
+                choice= input("u(username) | p(password) | s(security questions) | sp(secret phrase) | g(github) | exit: ".upper()).strip().lower()
                 
                 while True:
                     while choice not in choices:
                         print("invalid input!".upper())
-                        choice= input("u(username) | p(password) | s(security questions) g(github)| exit: ".upper()).strip().lower()
+                        choice= input("u(username) | p(password) | s(security questions) | sp(secret phrase) | g(github) | exit: ".upper()).strip().lower()
                     if choice == 'u':
                         new_username = variable_input(var_name="username",maximum_attempts=3)
                         if conf_security_questions(cls):
@@ -944,6 +946,7 @@ class PasswordManager():
                             clear_screen()
                         else:
                             print("Try again later".upper())
+                            clear_screen()
                             break
                     elif choice == 'p':
                         new_passwd = variable_input(var_name="password",maximum_attempts=3)
@@ -954,6 +957,7 @@ class PasswordManager():
                             clear_screen() 
                         else:
                             print("Try again later".upper())
+                            clear_screen()
                             break
                     elif choice == 's':
                         new_security_questions = collect_security_questions()
@@ -964,6 +968,7 @@ class PasswordManager():
                             clear_screen() 
                         else:
                             print("Try again later".upper())
+                            clear_screen()
                             break
                     elif choice == 'g':
                         new_github_details =  collect_git_credentials()   
@@ -974,7 +979,19 @@ class PasswordManager():
                             clear_screen() 
                         else:
                             print("Try again later".upper())
+                            clear_screen()
                             break
+                    elif choice == 'sp':
+                        new_secret_phrase = variable_input(var_name="secret phrase",maximum_attempts=3)
+                        if conf_security_questions(cls):
+                            cls.user_info_dictionary['secretPhrase'] = new_secret_phrase
+                            encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
+                            print('secret phrase succssefully updated!'.upper()) 
+                            clear_screen() 
+                        else:
+                            print("Try again later".upper())
+                            clear_screen()
+                            break    
                     elif choice == "exit":
                         clear_screen()
                         break    
