@@ -37,14 +37,14 @@ def extract_zip_with_password():
         return False
 
     else:
-        os.makedirs(FOLDER_NAME)
         zip_file_path = BACKUP_DIR+"/Backup.zip"
         if not os.path.exists(zip_file_path):
             print('Backup does not exist!'.capitalize())
             return False
-            # exit()
+        os.makedirs(FOLDER_NAME)
+            
         print("Backup File Located initiating retrieval...")
-        password = input('Enter password to Unlock  Backup file: '.capitalize()).encode('utf-8')
+        password = getpass('Enter password to Unlock  Backup file: '.capitalize()).encode('utf-8')
         # extract_zip_with_password(zip_file_path, FOLDER_NAME, password)    
         with pyzipper.AESZipFile(zip_file_path, 'r') as zip_file:
             try:
@@ -61,7 +61,6 @@ if os.path.exists(FOLDER_NAME):
     os.chdir(FOLDER_NAME)
 elif os.path.exists(BACKUP_DIR):
     extract_zip_with_password()
-    os.chdir(FOLDER_NAME)
 else:
     os.makedirs(FOLDER_NAME)
     os.chdir(FOLDER_NAME)
@@ -412,7 +411,7 @@ def extract_seedphrase_from_image(image_path):
 
 # Clearing console function
 def clear_screen():
-    sleep(.9)
+    sleep(.7)
     if windows:
         subprocess.run("cls", shell=True)
     elif linux or "mac" in platform.platform().lower():
@@ -533,7 +532,7 @@ class PasswordManager():
             if attempts_remaining == 0:
                 print('maximum number of attempts exceeded,kindly try again later'.upper())
                 quit()        
-        secretPhrase = getpass('set your secret phrase: '.upper()).strip()
+        secretPhrase = getpass('set your secret phrase(never share with anyone): '.upper()).strip()
         conf_secretPhrase = getpass('confirm your secret phrase: '.upper()).strip()
         attempts_remaining = 3
         while conf_secretPhrase != secretPhrase:
