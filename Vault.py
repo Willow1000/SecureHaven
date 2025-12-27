@@ -717,8 +717,21 @@ class PasswordManager():
                             if value == 'Wallet with those particulars does not exist!':
                                 print(value.upper())
                             else:
-                                pyperclip.copy(value)    
-                                print(f'Your "{app_name}" "{wallet_name}" details for "{wallet_email}" have been copied to clipboard')
+                                try:
+                                    seedphrase = ''
+                                    for i in value.get("seedphrase",None).values():
+                                        seedphrase+=f'{i}\t'
+                                    with open(f"{app_name}_{wallet_name}_{wallet_email}.txt",'w') as f:
+                                        f.write(f'Password: {value.get("password",None)}\n\nSeedPhrase:{seedphrase}')
+                                    print(f"details can be located here: {os.getcwd()}/{app_name}_{wallet_name}_{wallet_email}.txt")  
+                                
+                                    delete_choice = input("Would you like the file to be deleted? (y|n): ".upper()).lower()  
+                                    if delete_choice == 'y':
+                                        delete = input("press enter to delete the file: ".upper())
+                                        if not delete:
+                                            os.remove(f"{app_name}_{wallet_name}_{wallet_email}.txt")
+                                except Exception as e:
+                                    print(f"An error ocurred: {e}")
                         elif action_choice == "create":
                             app_name = input("enter app name: ".upper()).strip()
                             wallet_name = input("enter name of the wallet: ".upper()).strip()
@@ -831,9 +844,7 @@ class PasswordManager():
                 sleep(2.2)
                 clear_screen()
 
-
             # SECURING FILE FUNCTIONALITY
-
             elif activity_choice == 'file':
                 file_action_choices = ['secure', 'retrieve', "list", "exit", 'clear', "empty"]
                 zip_pass = bytes(decrypt_file(file_path=USER_INFO_FILE,password = PASSWORD).get("retrival_pass"), encoding="utf8")
@@ -845,34 +856,36 @@ class PasswordManager():
                         file_action_choice = input("would you like to secure | retrieve | clear | list secured files | exit: ".upper()).strip().lower()
                    
                     if file_action_choice == "retrieve":
-                        if os.path.exists(zip_file_path):
-
-                            extract_folder = input("enter the to the folder where the file will be extracted: ".upper())
+                        try:
                             
-                            path_file = input("enter the name of the file you would like to retrieve: ".upper()).strip()
-                            if not os.path.exists(extract_folder):    
-                                os.makedirs(extract_folder)
+                            if os.path.exists(zip_file_path):
+
+                                extract_folder = input("enter the to the folder where the file will be extracted: ".upper())
                                 
-                            with pyzipper.AESZipFile(zip_file_path, 'r') as zip_file:
-                                zip_file.setpassword(zip_pass)
-                                if path_file in zip_file.namelist():
-                                    zip_file.extract(path_file, path=extract_folder)
-                                    print(f"You can access the file here {extract_folder}")
-                                    back_to_zip = input("would you like to delete the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
-                                    while back_to_zip not in ['y', 'n']:
-                                        print("invalid choice")
-                                        back_to_zip = input("would you like to secure the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
-                                    if back_to_zip == 'y':
-                                        done = input("press enter to delete the file: ".upper()).strip()
-                                        if done == "" or done:
-                                            shutil.rmtree(extract_folder)
-                                            print("The file has been deleted".upper())
-                                else:
-                                    print("That file is not in the vault".upper())
-                                   
-                           
-                        else:
-                            print("the vault is empty!".upper())
+                                path_file = input("enter the name of the file you would like to retrieve: ".upper()).strip()
+                                if not os.path.exists(extract_folder):    
+                                    os.makedirs(extract_folder)
+                                    
+                                with pyzipper.AESZipFile(zip_file_path, 'r') as zip_file:
+                                    zip_file.setpassword(zip_pass)
+                                    if path_file in zip_file.namelist():
+                                        zip_file.extract(path_file, path=extract_folder)
+                                        print(f"You can access the file here {extract_folder}")
+                                        back_to_zip = input("would you like to delete the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
+                                        while back_to_zip not in ['y', 'n']:
+                                            print("invalid choice")
+                                            back_to_zip = input("would you like to secure the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
+                                        if back_to_zip == 'y':
+                                            done = input("press enter to delete the file: ".upper()).strip()
+                                            if done == "" or done:
+                                                shutil.rmtree(extract_folder)
+                                                print("The file has been deleted".upper())
+                                    else:
+                                        print("That file is not in the vault".upper())
+                            else:
+                                print("the vault is empty!".upper())
+                        except Exception as e:
+                            print(f"An error ocurred: {e}")        
                     elif file_action_choice == "secure":
                         consent_choices = ["y", 'n']
                         try:
