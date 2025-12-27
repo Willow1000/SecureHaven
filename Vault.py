@@ -79,7 +79,6 @@ BACKUP_FOLDER_PATH = Path(os.getcwd()+"/"+'Backup')
 REPOSITORY_PATH = Path(os.getcwd()+"/"+"..")
 BACKUP_ZIP_FILE_PATH = "Backup.zip"
 SECURE_VAULT_ZIP_PATH = 'Vault.zip'
-# EXTRACTION_FOLDER_PATH = "Here"
 
 PASSWORD_FILE_NAME = 'passengers.json'
 SECRETS_FILE_NAME = 'essentials.json'
@@ -849,7 +848,7 @@ class PasswordManager():
                         if os.path.exists(zip_file_path):
 
                             extract_folder = input("enter the to the folder where the file will be extracted: ".upper())
-                            # str(REPOSITORY_PATH) + "/" + EXTRACTION_FOLDER_PATH
+                            
                             path_file = input("enter the name of the file you would like to retrieve: ".upper()).strip()
                             if not os.path.exists(extract_folder):    
                                 os.makedirs(extract_folder)
