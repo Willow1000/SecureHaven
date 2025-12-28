@@ -28,17 +28,18 @@ linux = 'linux' in platform.platform().lower()
 if windows:
     os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exist_ok=True)
     BACKUP_DIR = f'c:/Users/{pa.getuser()}/.backup'
+    ZIP_FILE_PATH = BACKUP_DIR+"/Backup.zip"
 elif linux:
     if not os.path.exists(f"/home/{pa.getuser()}/.backup"):
         subprocess.run(["sudo","mkdir",f"/home/{pa.getuser()}/.backup"])
     BACKUP_DIR = f"/home/{pa.getuser()}/.backup"
+    ZIP_FILE_PATH = BACKUP_DIR+"/Backup.zip"
 def extract_zip_with_password():
     if os.path.exists(FOLDER_NAME):
         return False
 
     else:
-        zip_file_path = BACKUP_DIR+"/Backup.zip"
-        if not os.path.exists(zip_file_path):
+        if not os.path.exists(ZIP_FILE_PATH):
             print('Backup does not exist!'.capitalize())
             return False
         os.makedirs(FOLDER_NAME)
@@ -57,12 +58,12 @@ def extract_zip_with_password():
                 print(f'An error occured: {e}')    
                 return False
 
-if os.path.exists(FOLDER_NAME):
-    os.chdir(FOLDER_NAME)
-elif os.path.exists(BACKUP_DIR):
-    extract_zip_with_password()
-else:
+if not os.path.exists(FOLDER_NAME) and not os.path.exists(ZIP_FILE_PATH):
     os.makedirs(FOLDER_NAME)
+    os.chdir(FOLDER_NAME)
+elif not os.path.exists(FOLDER_NAME) and os.path.exists(ZIP_FILE_PATH):
+    extract_zip_with_password()    
+else :
     os.chdir(FOLDER_NAME)
 
 # CONSTANTS
@@ -860,7 +861,7 @@ class PasswordManager():
                             
                             if os.path.exists(zip_file_path):
 
-                                extract_folder = input("enter the to the folder where the file will be extracted: ".upper())
+                                extract_folder = input("enter the to the folder where the file will be extracted (ideally create a new folder): ".upper())
                                 
                                 path_file = input("enter the name of the file you would like to retrieve: ".upper()).strip()
                                 if not os.path.exists(extract_folder):    
