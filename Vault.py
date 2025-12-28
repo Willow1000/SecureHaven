@@ -872,10 +872,10 @@ class PasswordManager():
                                     if path_file in zip_file.namelist():
                                         zip_file.extract(path_file, path=extract_folder)
                                         print(f"You can access the file here {extract_folder}")
-                                        back_to_zip = input("would you like to delete the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
+                                        back_to_zip = input("would you like to secure the file after accessing it? y(yes - ensure the folder does not contain files you would like to keep) | n(no): ".upper()).strip().lower()
                                         while back_to_zip not in ['y', 'n']:
                                             print("invalid choice")
-                                            back_to_zip = input("would you like to secure the file after accessing it? y(yes) | n(no): ".upper()).strip().lower()
+                                            back_to_zip = input("would you like to secure the file after accessing it? y(yes - ensure the folder does not contain files you would like to keep) | n(no): ".upper()).strip().lower()
                                         if back_to_zip == 'y':
                                             done = input("press enter to delete the file: ".upper()).strip()
                                             if done == "" or done:
