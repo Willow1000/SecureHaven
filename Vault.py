@@ -20,11 +20,12 @@ from nacl.utils import random
 
 
 FOLDER_NAME = 'production'
+
 # OS
 windows = 'windows' in platform.platform().lower()
 linux = 'linux' in platform.platform().lower()
 
-# OS BASED VARIABLES
+# OS BASED CONSTANTS
 if windows:
     os.makedirs(f"c:/Users/{pa.getuser()}/.backup",exist_ok=True)
     BACKUP_DIR = f'c:/Users/{pa.getuser()}/.backup'
@@ -58,6 +59,7 @@ def extract_zip_with_password():
                 print(f'An error occured: {e}')    
                 return False
 
+# Changing working directory to production
 if not os.path.exists(FOLDER_NAME) and not os.path.exists(ZIP_FILE_PATH):
     os.makedirs(FOLDER_NAME)
     os.chdir(FOLDER_NAME)
@@ -75,17 +77,19 @@ USER_INFO_FILE = Path(os.getcwd()+'/'+'itenerary.json')
 WALLET_STORAGE_FILE = Path(os.getcwd()+'/'+'locus.json')
 PROJECT_STORAGE_FILE = Path(os.getcwd()+'/'+'memento.json')
 
+PASSWORD_FILE_NAME = 'passengers.json'
+SECRETS_FILE_NAME = 'essentials.json'
+WALLET_FILE_NAME = "locus.json"
+PROJECT_FILE_NAME = "memento.json"
+USER_INFO_FILE_NAME = 'itenerary.json'
+
 # Backup constants
 BACKUP_FOLDER_PATH = Path(os.getcwd()+"/"+'Backup')
 REPOSITORY_PATH = Path(os.getcwd()+"/"+"..")
 BACKUP_ZIP_FILE_PATH = "Backup.zip"
 SECURE_VAULT_ZIP_PATH = 'Vault.zip'
 
-PASSWORD_FILE_NAME = 'passengers.json'
-SECRETS_FILE_NAME = 'essentials.json'
-WALLET_FILE_NAME = "locus.json"
-PROJECT_FILE_NAME = "memento.json"
-USER_INFO_FILE_NAME = 'itenerary.json'
+
 
 # Github constants
 COMMIT_MESSAGE = "Made some changes"
