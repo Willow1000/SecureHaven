@@ -958,6 +958,7 @@ class PasswordManager():
                             encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
                             print('username succssefully updated!'.upper()) 
                             clear_screen()
+                            break
                         else:
                             print("Try again later".upper())
                             clear_screen()
@@ -969,6 +970,7 @@ class PasswordManager():
                             encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
                             print('password succssefully updated!'.upper()) 
                             clear_screen() 
+                            return
                         else:
                             print("Try again later".upper())
                             clear_screen()
@@ -980,6 +982,7 @@ class PasswordManager():
                             encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
                             print('security questions succssefully updated!'.upper()) 
                             clear_screen() 
+                            return
                         else:
                             print("Try again later".upper())
                             clear_screen()
@@ -991,6 +994,7 @@ class PasswordManager():
                             encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
                             print('github details succssefully updated!'.upper()) 
                             clear_screen() 
+                            break
                         else:
                             print("Try again later".upper())
                             clear_screen()
@@ -1002,6 +1006,7 @@ class PasswordManager():
                             encrypt_file(data_dict = cls.user_info_dictionary, file_path = USER_INFO_FILE,password = PASSWORD)
                             print('secret phrase succssefully updated!'.upper()) 
                             clear_screen() 
+                            break
                         else:
                             print("Try again later".upper())
                             clear_screen()
